@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
 import { UserModule } from './user/user/user.module';
 import { PostModule } from './post/post/post.module';
 import { CommentModule } from './comment/comment/comment.module';
@@ -21,7 +20,7 @@ import { CommentModule } from './comment/comment/comment.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [join(__dirname, '**/*.entity{.ts,.js}')],
+        autoLoadEntities: true,
         synchronize: true,
       }),
     }),
