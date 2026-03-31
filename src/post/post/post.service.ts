@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from '../entity/post';
@@ -43,16 +47,24 @@ export class PostService {
     return post;
   }
 
-  async update(id: number, dto: UpdatePostDto) {
+  async update(id: number, dto: UpdatePostDto, user: User) {
     const post = await this.findOne(id);
 
-    Object.assign(post, dto);
+    if (post.user.id !== user.id) {
+      throw new UnauthorizedException('You cannot update this post');
+    }
 
+    Object.assign(post, dto);
     return this.postRepository.save(post);
   }
 
-  async remove(id: number) {
+  async remove(id: number, user: User) {
     const post = await this.findOne(id);
+
+    if (post.user.id !== user.id) {
+      throw new UnauthorizedException('You cannot delete this post');
+    }
+
     return this.postRepository.remove(post);
   }
 }

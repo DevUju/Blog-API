@@ -27,19 +27,16 @@ export class PostController {
     return this.postService.create(dto, user);
   }
 
-  // Public: anyone can view posts
   @Get()
   findAll() {
     return this.postService.findAll();
   }
 
-  // Public: anyone can view a single post
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.postService.findOne(id);
   }
 
-  // Only authenticated users can update their own posts
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
@@ -47,13 +44,12 @@ export class PostController {
     @Body() dto: UpdatePostDto,
     @CurrentUser() user: User,
   ) {
-    return this.postService.update(id, dto, user); // 👈 pass user for ownership check
+    return this.postService.update(id, dto, user);
   }
 
-  // Only authenticated users can delete their own posts
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: User) {
-    return this.postService.remove(id, user); // 👈 pass user for ownership check
+    return this.postService.remove(id, user);
   }
 }

@@ -2,17 +2,20 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Delete,
   Body,
   Param,
   UseGuards,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { CommentsService } from './comment.service';
 import { JwtAuthGuard } from '../../auth/guard/auth-guard';
 import { CurrentUser } from '../../auth/decorator/current-user';
 import { User } from '../../user/entity/user';
+
+import { CreateCommentDto } from '../dto/create-comment';
+import { UpdateCommentDto } from '../dto/update-comment';
 
 @Controller('comments')
 export class CommentsController {
@@ -21,13 +24,13 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(
-    @Body('content') content: string,
-    @Body('postId', ParseIntPipe) postId: number,
-    @CurrentUser() user: User, // 👈 inject logged-in user
+    @Body() createCommentDto: CreateCommentDto,
+    @CurrentUser() user: User,
   ) {
-    return this.commentsService.create(content, user, postId);
+    return this.commentsService.create(createCommentDto, user);
   }
 
+  // ✅ GET ALL
   @Get()
   findAll() {
     return this.commentsService.findAll();
@@ -39,13 +42,13 @@ export class CommentsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body('content') content: string,
-    @CurrentUser() user: User, // 👈 enforce ownership
+    @Body() updateCommentDto: UpdateCommentDto,
+    @CurrentUser() user: User,
   ) {
-    return this.commentsService.update(id, content, user);
+    return this.commentsService.update(id, updateCommentDto, user);
   }
 
   @UseGuards(JwtAuthGuard)
